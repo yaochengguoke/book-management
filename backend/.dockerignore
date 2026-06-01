@@ -1,0 +1,7 @@
+target/
+!.target/*.jar
+*.class
+*.log
+.git
+.gitignore
+.mvn/

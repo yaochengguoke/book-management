@@ -1,0 +1,33 @@
+# Java
+*.class
+*.jar
+*.war
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# Node
+node_modules/
+dist/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# SQLite data (don't commit actual data)
+backend/data/*.sqlite
+backend/data/*.db
+
+# Environment
+.env
+.env.local
+
+# Logs
+*.log
+
+# Temp
+/tmp/

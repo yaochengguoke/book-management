@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>智慧图书管理系统</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+        
+        .login-page { 
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+        }
+        .login-card { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 20px; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3); 
+            width: 400px; 
+        }
+        .login-card h1 { 
+            text-align: center; 
+            color: #333; 
+            margin-bottom: 30px; 
+            font-size: 28px; 
+        }
+        .login-card h1 span { 
+            background: linear-gradient(135deg, #667eea, #764ba2); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+        }
+        
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; margin-bottom: 8px; color: #555; font-weight: 500; }
+        .input-group input { 
+            width: 100%; 
+            padding: 14px 16px; 
+            border: 2px solid #e1e1e1; 
+            border-radius: 10px; 
+            font-size: 14px; 
+            outline: none; 
+        }
+        .input-group input:focus { 
+            border-color: #667eea; 
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); 
+        }
+        
+        .btn { 
+            padding: 12px 24px; 
+            border: none; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-size: 14px; 
+            font-weight: 600; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        .btn-primary { 
+            background: linear-gradient(135deg, #667eea, #764ba2); 
+            color: white; 
+            width: 100%; 
+            margin-top: 10px;
+        }
+        
+        .main-layout { display: flex; min-height: 100vh; }
+        .sidebar { 
+            width: 250px; 
+            background: #2d3748; 
+            padding: 20px; 
+            color: white; 
+        }
+        .sidebar-header { margin-bottom: 20px; }
+        .sidebar-nav { list-style: none; }
+        .nav-item { margin-bottom: 10px; }
+        .nav-item a { 
+            color: white; 
+            text-decoration: none; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            padding: 10px; 
+            border-radius: 8px; 
+        }
+        .nav-item a:hover { background: #4a5568; }
+        .nav-item.active a { background: #667eea; }
+        
+        .main-content { 
+            flex: 1; 
+            padding: 20px; 
+            background: #f7fafc; 
+        }
+        .page-header { margin-bottom: 20px; }
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 20px; 
+            margin-bottom: 20px; 
+        }
+        .stat-card { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        }
+        .stat-card h3 { font-size: 28px; color: #333; }
+        .stat-card p { color: #666; font-size: 14px; }
+        
+        .card { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            margin-bottom: 20px; 
+        }
+        .card-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 20px; 
+        }
+        .card-header h3 { color: #333; }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th, td { 
+            padding: 12px; 
+            text-align: left; 
+            border-bottom: 1px solid #e2e8f0; 
+        }
+        th { background: #f7fafc; font-weight: 600; }
+        
+        .btn-success { background: #48bb78; color: white; }
+        .btn-danger { background: #fc8181; color: white; }
+        
+        .toast { 
+            position: fixed; 
+            top: 20px; 
+            right: 20px; 
+            padding: 15px 25px; 
+            border-radius: 10px; 
+            color: white; 
+            font-weight: 500; 
+            z-index: 1000; 
+        }
+        .toast-success { background: #48bb78; }
+        .toast-error { background: #fc8181; }
+        
+        .modal-overlay { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 0; 
+            background: rgba(0,0,0,0.5); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 2000; 
+        }
+        .modal { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 15px; 
+            width: 90%; 
+            max-width: 500px; 
+        }
+        .modal h3 { margin-bottom: 20px; }
+        
+        .form-row { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px; 
+        }
+        
+        .badge { 
+            padding: 4px 12px; 
+            border-radius: 20px; 
+            font-size: 12px; 
+            font-weight: 500; 
+        }
+        .badge-success { background: #c6f6d5; color: #22543d; }
+        .badge-warning { background: #feebc8; color: #744210; }
+        .badge-info { background: #bee3f8; color: #1a365d; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const API_BASE_URL = '/api';
+
+        function App() {
+            const [token, setToken] = useState(localStorage.getItem('token') || '');
+            const [isLoggedIn, setIsLoggedIn] = useState(!!token);
+            const [activeTab, setActiveTab] = useState('dashboard');
+            const [toast, setToast] = useState(null);
+
+            const showToast = (message, type = 'success') => {
+                setToast({ message, type });
+                setTimeout(() => setToast(null), 3000);
+            };
+
+            const handleLogin = async (username, password) => {
+                try {
+                    const response = await axios.post(`${API_BASE_URL}/auth/login`, { username, password });
+                    const newToken = response.data.data.token;
+                    localStorage.setItem('token', newToken);
+                    setToken(newToken);
+                    setIsLoggedIn(true);
+                    showToast('登录成功！');
+                } catch (error) {
+                    showToast('登录失败：' + (error.response?.data?.message || error.message), 'error');
+                }
+            };
+
+            const handleLogout = () => {
+                localStorage.removeItem('token');
+                setToken('');
+                setIsLoggedIn(false);
+                showToast('已退出登录');
+            };
+
+            if (!isLoggedIn) {
+                return <LoginPage onLogin={handleLogin} />;
+            }
+
+            return (
+                <div>
+                    {toast && <div className={`toast toast-${toast.type}`}>{toast.message}</div>}
+                    <div className="main-layout">
+                        <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} onLogout={handleLogout} />
+                        <MainContent activeTab={activeTab} token={token} showToast={showToast} />
+                    </div>
+                </div>
+            );
+        }
+
+        function LoginPage({ onLogin }) {
+            const [username, setUsername] = useState('admin');
+            const [password, setPassword] = useState('admin');
+
+            return (
+                <div className="login-page">
+                    <div className="login-card">
+                        <h1><span>📚 智慧图书管理系统</span></h1>
+                        <div className="input-group">
+                            <label>用户名</label>
+                            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="请输入用户名" />
+                        </div>
+                        <div className="input-group">
+                            <label>密码</label>
+                            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="请输入密码" />
+                        </div>
+                        <button className="btn btn-primary" onClick={() => onLogin(username, password)}>登录</button>
+                    </div>
+                </div>
+            );
+        }
+
+        function Sidebar({ activeTab, setActiveTab, onLogout }) {
+            const tabs = [
+                { id: 'dashboard', label: '数据概览', icon: '📊' },
+                { id: 'books', label: '图书管理', icon: '📚' },
+                { id: 'borrows', label: '借阅管理', icon: '📖' },
+                { id: 'users', label: '用户管理', icon: '👥' },
+                { id: 'points', label: '积分管理', icon: '🏆' },
+                { id: 'admin', label: '系统管理', icon: '⚙️' },
+                { id: 'search', label: '全局搜索', icon: '🔍' }
+            ];
+
+            return (
+                <div className="sidebar">
+                    <div className="sidebar-header">
+                        <h2>📚 图书管理</h2>
+                    </div>
+                    <nav className="sidebar-nav">
+                        {tabs.map(tab => (
+                            <li key={tab.id} className={`nav-item ${activeTab === tab.id ? 'active' : ''}`}>
+                                <a href="#" onClick={(e) => { e.preventDefault(); setActiveTab(tab.id); }}>
+                                    <span>{tab.icon}</span>
+                                    <span>{tab.label}</span>
+                                </a>
+                            </li>
+                        ))}
+                    </nav>
+                    <div style={{ marginTop: 'auto', paddingTop: '20px' }}>
+                        <button className="btn btn-danger" onClick={onLogout} style={{ width: '100%' }}>退出登录</button>
+                    </div>
+                </div>
+            );
+        }
+
+        function MainContent({ activeTab, token, showToast }) {
+            const [stats, setStats] = useState({ totalBooks: 0, totalUsers: 0, totalBorrowed: 0, totalOverdue: 0 });
+
+            useEffect(() => {
+                if (activeTab === 'dashboard') {
+                    fetchStats();
+                }
+            }, [activeTab]);
+
+            const fetchStats = async () => {
+                try {
+                    const [booksRes, usersRes, borrowsRes] = await Promise.all([
+                        axios.get(`${API_BASE_URL}/books`),
+                        axios.get(`${API_BASE_URL}/users`),
+                        axios.get(`${API_BASE_URL}/borrows/statistics`)
+                    ]);
+                    setStats({
+                        totalBooks: booksRes.data.data.totalElements || 0,
+                        totalUsers: usersRes.data.data.totalElements || 0,
+                        totalBorrowed: borrowsRes.data.data.totalBorrowed || 0,
+                        totalOverdue: borrowsRes.data.data.totalOverdue || 0
+                    });
+                } catch (error) {
+                    console.error('Failed to fetch stats:', error);
+                }
+            };
+
+            return (
+                <div className="main-content">
+                    {activeTab === 'dashboard' && <Dashboard stats={stats} onRefresh={fetchStats} />}
+                    {activeTab === 'books' && <BookManagement token={token} showToast={showToast} />}
+                    {activeTab === 'borrows' && <BorrowManagement token={token} showToast={showToast} />}
+                    {activeTab === 'users' && <UserManagement token={token} showToast={showToast} />}
+                    {activeTab === 'points' && <PointsManagement token={token} showToast={showToast} />}
+                    {activeTab === 'admin' && <AdminPanel />}
+                    {activeTab === 'search' && <SearchPage token={token} />}
+                </div>
+            );
+        }
+
+        function Dashboard({ stats, onRefresh }) {
+            return (
+                <div>
+                    <div className="page-header">
+                        <h1>📊 数据概览</h1>
+                        <p>欢迎回来！这是您的图书管理系统概览</p>
+                    </div>
+                    <div className="stats-grid">
+                        <div className="stat-card">
+                            <h3>{stats.totalBooks}</h3>
+                            <p>📚 图书总数</p>
+                        </div>
+                        <div className="stat-card">
+                            <h3>{stats.totalUsers}</h3>
+                            <p>👥 用户总数</p>
+                        </div>
+                        <div className="stat-card">
+                            <h3>{stats.totalBorrowed}</h3>
+                            <p>📖 借阅中</p>
+                        </div>
+                        <div className="stat-card">
+                            <h3>{stats.totalOverdue}</h3>
+                            <p>⚠️ 逾期未还</p>
+                        </div>
+                    </div>
+                    <button className="btn btn-primary" onClick={onRefresh}>刷新数据</button>
+                </div>
+            );
+        }
+
+        function BookManagement({ token, showToast }) {
+            const [books, setBooks] = useState([]);
+            const [showModal, setShowModal] = useState(false);
+            const [formData, setFormData] = useState({ title: '', author: '', publisher: '', isbn: '', description: '', quantity: '1', price: '0' });
+
+            useEffect(() => {
+                fetchBooks();
+            }, []);
+
+            const fetchBooks = async () => {
+                const response = await axios.get(`${API_BASE_URL}/books`);
+                setBooks(response.data.data.content || []);
+            };
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                try {
+                    await axios.post(`${API_BASE_URL}/books`, {
+                        ...formData,
+                        quantity: parseInt(formData.quantity),
+                        price: parseFloat(formData.price)
+                    }, { headers: { Authorization: `Bearer ${token}` } });
+                    setShowModal(false);
+                    setFormData({ title: '', author: '', publisher: '', isbn: '', description: '', quantity: '1', price: '0' });
+                    fetchBooks();
+                    showToast('图书添加成功');
+                } catch (error) {
+                    showToast('添加失败', 'error');
+                }
+            };
+
+            const handleDelete = async (id) => {
+                if (!confirm('确定删除该图书？')) return;
+                try {
+                    await axios.delete(`${API_BASE_URL}/books/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+                    fetchBooks();
+                    showToast('图书删除成功');
+                } catch (error) {
+                    showToast('删除失败', 'error');
+                }
+            };
+
+            return (
+                <div>
+                    <div className="page-header">
+                        <h1>📚 图书管理</h1>
+                    </div>
+                    <div className="card">
+                        <div className="card-header">
+                            <h3>图书列表</h3>
+                            <button className="btn btn-success" onClick={() => setShowModal(true)}>添加图书</button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr><th>书名</th><th>作者</th><th>出版社</th><th>ISBN</th><th>数量</th><th>价格</th><th>操作</th></tr>
+                            </thead>
+                            <tbody>
+                                {books.map(book => (
+                                    <tr key={book.id}>
+                                        <td>{book.title}</td>
+                                        <td>{book.author}</td>
+                                        <td>{book.publisher}</td>
+                                        <td>{book.isbn}</td>
+                                        <td>{book.quantity}</td>
+                                        <td>¥{book.price}</td>
+                                        <td><button className="btn btn-danger" onClick={() => handleDelete(book.id)}>删除</button></td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {showModal && (
+                        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+                            <div className="modal" onClick={(e) => e.stopPropagation()}>
+                                <h3>添加图书</h3>
+                                <form onSubmit={handleSubmit}>
+                                    <div className="form-row">
+                                        <div className="input-group">
+                                            <label>书名</label>
+                                            <input type="text" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} required />
+                                        </div>
+                                        <div className="input-group">
+                                            <label>作者</label>
+                                            <input type="text" value={formData.author} onChange={(e) => setFormData({...formData, author: e.target.value})} required />
+                                        </div>
+                                    </div>
+                                    <div className="form-row">
+                                        <div className="input-group">
+                                            <label>出版社</label>
+                                            <input type="text" value={formData.publisher} onChange={(e) => setFormData({...formData, publisher: e.target.value})} />
+                                        </div>
+                                        <div className="input-group">
+                                            <label>ISBN</label>
+                                            <input type="text" value={formData.isbn} onChange={(e) => setFormData({...formData, isbn: e.target.value})} />
+                                        </div>
+                                    </div>
+                                    <div className="input-group">
+                                        <label>描述</label>
+                                        <textarea value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} rows="3" style={{width: '100%', padding: '12px'}}></textarea>
+                                    </div>
+                                    <div className="form-row">
+                                        <div className="input-group">
+                                            <label>数量</label>
+                                            <input type="number" value={formData.quantity} onChange={(e) => setFormData({...formData, quantity: e.target.value})} min="1" />
+                                        </div>
+                                        <div className="input-group">
+                                            <label>价格</label>
+                                            <input type="number" value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} step="0.01" min="0" />
+                                        </div>
+                                    </div>
+                                    <div style={{display: 'flex', gap: '10px', marginTop: '20px'}}>
+                                        <button type="submit" className="btn btn-success" style={{flex: 1}}>添加</button>
+                                        <button type="button" className="btn" onClick={() => setShowModal(false)} style={{flex: 1, background: '#e2e8f0'}}>取消</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        function BorrowManagement({ token, showToast }) {
+            const [borrows, setBorrows] = useState([]);
+            const [books, setBooks] = useState([]);
+            const [users, setUsers] = useState([]);
+            const [showModal, setShowModal] = useState(false);
+            const [formData, setFormData] = useState({ bookId: '', userId: '', borrowDays: '7' });
+
+            useEffect(() => {
+                fetchBorrows();
+                fetchBooksAndUsers();
+            }, []);
+
+            const fetchBorrows = async () => {
+                const response = await axios.get(`${API_BASE_URL}/borrows`);
+                setBorrows(response.data.data.content || []);
+            };
+
+            const fetchBooksAndUsers = async () => {
+                const [booksRes, usersRes] = await Promise.all([
+                    axios.get(`${API_BASE_URL}/books`),
+                    axios.get(`${API_BASE_URL}/users`)
+                ]);
+                setBooks(booksRes.data.data.content || []);
+                setUsers(usersRes.data.data.content || []);
+            };
+
+            const handleBorrow = async (e) => {
+                e.preventDefault();
+                try {
+                    await axios.post(`${API_BASE_URL}/borrows`, {
+                        bookId: parseInt(formData.bookId),
+                        userId: parseInt(formData.userId),
+                        borrowDays: parseInt(formData.borrowDays)
+                    }, { headers: { Authorization: `Bearer ${token}` } });
+                    setShowModal(false);
+                    setFormData({ bookId: '', userId: '', borrowDays: '7' });
+                    fetchBorrows();
+                    showToast('借阅成功');
+                } catch (error) {
+                    showToast('借阅失败', 'error');
+                }
+            };
+
+            const handleReturn = async (id) => {
+                try {
+                    await axios.put(`${API_BASE_URL}/borrows/${id}/return`, {}, { headers: { Authorization: `Bearer ${token}` } });
+                    fetchBorrows();
+                    showToast('归还成功');
+                } catch (error) {
+                    showToast('归还失败', 'error');
+                }
+            };
+
+            return (
+                <div>
+                    <div className="page-header">
+                        <h1>📖 借阅管理</h1>
+                    </div>
+                    <div className="card">
+                        <div className="card-header">
+                            <h3>借阅记录</h3>
+                            <button className="btn btn-success" onClick={() => setShowModal(true)}>新建借阅</button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr><th>图书</th><th>借阅人</th><th>借阅日期</th><th>应还日期</th><th>状态</th><th>操作</th></tr>
+                            </thead>
+                            <tbody>
+                                {borrows.map(borrow => (
+                                    <tr key={borrow.id}>
+                                        <td>{borrow.bookTitle}</td>
+                                        <td>{borrow.username}</td>
+                                        <td>{borrow.borrowDate}</td>
+                                        <td>{borrow.dueDate}</td>
+                                        <td><span className={`badge ${borrow.status === 'BORROWED' ? 'badge-warning' : 'badge-success'}`}>
+                                            {borrow.status === 'BORROWED' ? '借阅中' : '已归还'}
+                                        </span></td>
+                                        <td>
+                                            {borrow.status === 'BORROWED' && (
+                                                <button className="btn btn-success" onClick={() => handleReturn(borrow.id)}>归还</button>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {showModal && (
+                        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+                            <div className="modal" onClick={(e) => e.stopPropagation()}>
+                                <h3>新建借阅</h3>
+                                <form onSubmit={handleBorrow}>
+                                    <div className="input-group">
+                                        <label>选择图书</label>
+                                        <select value={formData.bookId} onChange={(e) => setFormData({...formData, bookId: e.target.value})} required>
+                                            <option value="">请选择</option>
+                                            {books.map(book => (
+                                                <option key={book.id} value={book.id}>{book.title}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="input-group">
+                                        <label>选择用户</label>
+                                        <select value={formData.userId} onChange={(e) => setFormData({...formData, userId: e.target.value})} required>
+                                            <option value="">请选择</option>
+                                            {users.map(user => (
+                                                <option key={user.id} value={user.id}>{user.username}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="input-group">
+                                        <label>借阅天数</label>
+                                        <input type="number" value={formData.borrowDays} onChange={(e) => setFormData({...formData, borrowDays: e.target.value})} min="1" />
+                                    </div>
+                                    <div style={{display: 'flex', gap: '10px', marginTop: '20px'}}>
+                                        <button type="submit" className="btn btn-success" style={{flex: 1}}>确认借阅</button>
+                                        <button type="button" className="btn" onClick={() => setShowModal(false)} style={{flex: 1, background: '#e2e8f0'}}>取消</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        function UserManagement({ token, showToast }) {
+            const [users, setUsers] = useState([]);
+            const [showModal, setShowModal] = useState(false);
+            const [formData, setFormData] = useState({ username: '', password: '', role: 'USER' });
+
+            useEffect(() => {
+                fetchUsers();
+            }, []);
+
+            const fetchUsers = async () => {
+                const response = await axios.get(`${API_BASE_URL}/users`);
+                setUsers(response.data.data.content || []);
+            };
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                try {
+                    await axios.post(`${API_BASE_URL}/users`, formData, { headers: { Authorization: `Bearer ${token}` } });
+                    setShowModal(false);
+                    setFormData({ username: '', password: '', role: 'USER' });
+                    fetchUsers();
+                    showToast('用户添加成功');
+                } catch (error) {
+                    showToast('添加失败', 'error');
+                }
+            };
+
+            const handleDelete = async (id) => {
+                if (!confirm('确定删除该用户？')) return;
+                try {
+                    await axios.delete(`${API_BASE_URL}/users/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+                    fetchUsers();
+                    showToast('用户删除成功');
+                } catch (error) {
+                    showToast('删除失败', 'error');
+                }
+            };
+
+            return (
+                <div>
+                    <div className="page-header">
+                        <h1>👥 用户管理</h1>
+                    </div>
+                    <div className="card">
+                        <div className="card-header">
+                            <h3>用户列表</h3>
+                            <button className="btn btn-success" onClick={() => setShowModal(true)}>添加用户</button>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr><th>用户名</th><th>角色</th><th>创建时间</th><th>操作</th></tr>
+                            </thead>
+                            <tbody>
+                                {users.map(user => (
+                                    <tr key={user.id}>
+                                        <td>{user.username}</td>
+                                        <td><span className={`badge ${user.role === 'ADMIN' ? 'badge-info' : 'badge-success'}`}>
+                                            {user.role === 'ADMIN' ? '管理员' : '普通用户'}
+                                        </span></td>
+                                        <td>{user.createdAt}</td>
+                                        <td><button className="btn btn-danger" onClick={() => handleDelete(user.id)}>删除</button></td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {showModal && (
+                        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+                            <div className="modal" onClick={(e) => e.stopPropagation()}>
+                                <h3>添加用户</h3>
+                                <form onSubmit={handleSubmit}>
+                                    <div className="input-group">
+                                        <label>用户名</label>
+                                        <input type="text" value={formData.username} onChange={(e) => setFormData({...formData, username: e.target.value})} required />
+                                    </div>
+                                    <div className="input-group">
+                                        <label>密码</label>
+                                        <input type="password" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} required />
+                                    </div>
+                                    <div className="input-group">
+                                        <label>角色</label>
+                                        <select value={formData.role} onChange={(e) => setFormData({...formData, role: e.target.value})}>
+                                            <option value="USER">普通用户</option>
+                                            <option value="ADMIN">管理员</option>
+                                        </select>
+                                    </div>
+                                    <div style={{display: 'flex', gap: '10px', marginTop: '20px'}}>
+                                        <button type="submit" className="btn btn-success" style={{flex: 1}}>添加</button>
+                                        <button type="button" className="btn" onClick={() => setShowModal(false)} style={{flex: 1, background: '#e2e8f0'}}>取消</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        function PointsManagement({ token, showToast }) {
+            const [selectedUser, setSelectedUser] = useState(null);
+            const [users, setUsers] = useState([]);
+            const [points, setPoints] = useState(null);
+            const [logs, setLogs] = useState([]);
+
+            useEffect(() => {
+                fetchUsers();
+            }, []);
+
+            const fetchUsers = async () => {
+                const response = await axios.get(`${API_BASE_URL}/users`);
+                setUsers(response.data.data.content || []);
+            };
+
+            const fetchPoints = async (userId) => {
+                try {
+                    const [pointsRes, logsRes] = await Promise.all([
+                        axios.get(`${API_BASE_URL}/points/user/${userId}`),
+                        axios.get(`${API_BASE_URL}/points/user/${userId}/logs`)
+                    ]);
+                    setPoints(pointsRes.data.data);
+                    setLogs(logsRes.data.data || []);
+                } catch (error) {
+                    console.error('Failed to fetch points:', error);
+                }
+            };
+
+            const handleSignin = async () => {
+                if (!selectedUser) return;
+                try {
+                    await axios.post(`${API_BASE_URL}/points/user/${selectedUser.id}/signin`, {}, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+                    fetchPoints(selectedUser.id);
+                    showToast('签到成功！获得1积分');
+                } catch (error) {
+                    showToast('签到失败', 'error');
+                }
+            };
+
+            const handleAddPoints = async (amount) => {
+                if (!selectedUser) return;
+                try {
+                    await axios.post(`${API_BASE_URL}/points/user/${selectedUser.id}/earn?amount=${amount}&description=管理员添加`, {}, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+                    fetchPoints(selectedUser.id);
+                    showToast(`成功添加${amount}积分`);
+                } catch (error) {
+                    showToast('添加失败', 'error');
+                }
+            };
+
+            return (
+                <div>
+                    <div className="page-header">
+                        <h1>🏆 积分管理</h1>
+                    </div>
+                    <div className="card">
+                        <h3>选择用户</h3>
+                        <select value={selectedUser?.id || ''} onChange={(e) => {
+                            const user = users.find(u => u.id === parseInt(e.target.value));
+                            setSelectedUser(user);
+                            if (user) fetchPoints(user.id);
+                        }}>
+                            <option value="">请选择用户</option>
+                            {users.map(user => (
+                                <option key={user.id} value={user.id}>{user.username}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {points && (
+                        <div>
+                            <div className="stats-grid">
+                                <div className="stat-card">
+                                    <h3>{points.balance}</h3>
+                                    <p>💰 当前余额</p>
+                                </div>
+                                <div className="stat-card">
+                                    <h3>{points.totalEarned}</h3>
+                                    <p>📈 累计获得</p>
+                                </div>
+                                <div className="stat-card">
+                                    <h3>{points.totalSpent}</h3>
+                                    <p>💳 累计消费</p>
+                                </div>
+                            </div>
+                            <div className="card">
+                                <div className="card-header">
+                                    <h3>积分操作</h3>
+                                </div>
+                                <div style={{display: 'flex', gap: '10px'}}>
+                                    <button className="btn btn-primary" onClick={handleSignin}>每日签到 (+1)</button>
+                                    <button className="btn btn-success" onClick={() => handleAddPoints(10)}>添加10积分</button>
+                                    <button className="btn btn-success" onClick={() => handleAddPoints(50)}>添加50积分</button>
+                                    <button className="btn btn-success" onClick={() => handleAddPoints(100)}>添加100积分</button>
+                                </div>
+                            </div>
+                            <div className="card">
+                                <h3>积分记录</h3>
+                                <table>
+                                    <thead>
+                                        <tr><th>时间</th><th>描述</th><th>积分</th><th>类型</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        {logs.map(log => (
+                                            <tr key={log.id}>
+                                                <td>{log.createdAt}</td>
+                                                <td>{log.description}</td>
+                                                <td style={{color: log.amount > 0 ? '#48bb78' : '#fc8181'}}>
+                                                    {log.amount > 0 ? '+' : ''}{log.amount}
+                                                </td>
+                                                <td><span className={`badge ${log.type === 'EARN' ? 'badge-success' : 'badge-warning'}`}>
+                                                    {log.type === 'EARN' ? '获得' : '消费'}
+                                                </span></td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        function AdminPanel() {
+            const [logs] = useState([
+                { id: 1, action: '用户登录', user: 'admin', time: new Date().toLocaleString(), type: 'login' },
+                { id: 2, action: '添加图书《三体》', user: 'admin', time: new Date(Date.now() - 3600000).toLocaleString(), type: 'create' },
+                { id: 3, action: '创建借阅记录', user: 'admin', time: new Date(Date.now() - 7200000).toLocaleString(), type: 'borrow' },
+                { id: 4, action: '添加用户 test', user: 'admin', time: new Date(Date.now() - 10800000).toLocaleString(), type: 'create' }
+            ]);
+
+            const getActionIcon = (type) => {
+                const icons = { login: '🔑', create: '➕', borrow: '📖', delete: '🗑️', update: '✏️' };
+                return icons[type] || '📝';
+            };
+
+            return (
+                <div>
+                    <div className="page-header">
+                        <h1>⚙️ 系统管理</h1>
+                    </div>
+                    <div className="card">
+                        <h3>📊 系统统计</h3>
+                        <div className="stats-grid">
+                            <div className="stat-card">
+                                <h3>12</h3>
+                                <p>今日借阅</p>
+                            </div>
+                            <div className="stat-card">
+                                <h3>5</h3>
+                                <p>今日新增图书</p>
+                            </div>
+                            <div className="stat-card">
+                                <h3>28</h3>
+                                <p>本周活跃用户</p>
+                            </div>
+                            <div className="stat-card">
+                                <h3>99.9%</h3>
+                                <p>系统运行时间</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="card">
+                        <h3>📋 操作日志</h3>
+                        {logs.map(log => (
+                            <div key={log.id} style={{display: 'flex', alignItems: 'center', gap: '15px', padding: '10px 0', borderBottom: '1px solid #e2e8f0'}}>
+                                <span style={{fontSize: '24px'}}>{getActionIcon(log.type)}</span>
+                                <div style={{flex: 1}}>
+                                    <h4>{log.action}</h4>
+                                    <p>操作人：{log.user}</p>
+                                </div>
+                                <div style={{color: '#666', fontSize: '12px'}}>{log.time}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        function SearchPage({ token }) {
+            const [query, setQuery] = useState('');
+            const [results, setResults] = useState({ books: [], users: [], borrows: [] });
+
+            const handleSearch = async () => {
+                if (!query.trim()) return;
+                try {
+                    const [booksRes, usersRes, borrowsRes] = await Promise.all([
+                        axios.get(`${API_BASE_URL}/books/search?title=${query}`),
+                        axios.get(`${API_BASE_URL}/users?search=${query}`),
+                        axios.get(`${API_BASE_URL}/borrows/search?keyword=${query}`)
+                    ]);
+                    setResults({
+                        books: booksRes.data.data.content || [],
+                        users: usersRes.data.data.content || [],
+                        borrows: borrowsRes.data.data.content || []
+                    });
+                } catch (error) {
+                    console.error('Search failed:', error);
+                }
+            };
+
+            return (
+                <div>
+                    <div className="page-header">
+                        <h1>🔍 全局搜索</h1>
+                    </div>
+                    <div className="card">
+                        <div style={{display: 'flex', gap: '10px'}}>
+                            <input 
+                                type="text" 
+                                value={query} 
+                                onChange={(e) => setQuery(e.target.value)} 
+                                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                                placeholder="搜索图书、用户或借阅记录..."
+                                style={{flex: 1, padding: '12px', borderRadius: '8px', border: '2px solid #e2e8f0'}}
+                            />
+                            <button className="btn btn-primary" onClick={handleSearch}>搜索</button>
+                        </div>
+                    </div>
+
+                    {query && (
+                        <div>
+                            {results.books.length > 0 && (
+                                <div className="card">
+                                    <h3>📚 图书 ({results.books.length})</h3>
+                                    <table>
+                                        <tbody>
+                                            {results.books.map(item => (
+                                                <tr key={item.id}>
+                                                    <td>{item.title}</td>
+                                                    <td>{item.author}</td>
+                                                    <td>{item.publisher}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                            {results.users.length > 0 && (
+                                <div className="card">
+                                    <h3>👥 用户 ({results.users.length})</h3>
+                                    <table>
+                                        <tbody>
+                                            {results.users.map(item => (
+                                                <tr key={item.id}>
+                                                    <td>{item.username}</td>
+                                                    <td><span className={`badge ${item.role === 'ADMIN' ? 'badge-info' : 'badge-success'}`}>
+                                                        {item.role === 'ADMIN' ? '管理员' : '用户'}
+                                                    </span></td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                            {results.borrows.length > 0 && (
+                                <div className="card">
+                                    <h3>📖 借阅记录 ({results.borrows.length})</h3>
+                                    <table>
+                                        <tbody>
+                                            {results.borrows.map(item => (
+                                                <tr key={item.id}>
+                                                    <td>{item.bookTitle}</td>
+                                                    <td>{item.username}</td>
+                                                    <td><span className={`badge ${item.status === 'BORROWED' ? 'badge-warning' : 'badge-success'}`}>
+                                                        {item.status === 'BORROWED' ? '借阅中' : '已归还'}
+                                                    </span></td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                            {results.books.length === 0 && results.users.length === 0 && results.borrows.length === 0 && (
+                                <div className="card" style={{textAlign: 'center', padding: '40px'}}>
+                                    <div style={{fontSize: '48px', marginBottom: '10px'}}>🔍</div>
+                                    <p>未找到匹配结果</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
