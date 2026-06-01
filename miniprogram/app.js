@@ -1,7 +1,7 @@
 // 智慧图书管理系统 - 微信小程序
 App({
   globalData: {
-    baseUrl: 'http://localhost:8080', // 开发环境，上线改为HTTPS域名
+    baseUrl: 'https://springboot-pzz8-264849-5-1439013668.sh.run.tcloudbase.com', // 开发环境，上线改为HTTPS域名
     token: '',
     userInfo: null
   },
