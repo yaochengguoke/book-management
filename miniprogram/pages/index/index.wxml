@@ -1,62 +1,48 @@
 <view class="container">
-  <!-- 统计卡片 -->
+  <!-- Stats -->
   <view class="stats-row">
-    <view class="stat-card">
-      <view class="num">{{stats.bookCount}}</view>
-      <view class="label">馆藏图书</view>
-    </view>
-    <view class="stat-card">
-      <view class="num">{{stats.borrowCount}}</view>
-      <view class="label">借阅中</view>
-    </view>
-    <view class="stat-card">
-      <view class="num">{{stats.userCount}}</view>
-      <view class="label">注册用户</view>
-    </view>
-    <view class="stat-card">
-      <view class="num">{{stats.totalBorrows}}</view>
-      <view class="label">累计借阅</view>
+    <view class="stat-card"><view class="num">{{stats.bookCount}}</view><view class="label">馆藏图书</view></view>
+    <view class="stat-card s2"><view class="num">{{stats.borrowCount}}</view><view class="label">借阅中</view></view>
+    <view class="stat-card s3"><view class="num">{{stats.userCount}}</view><view class="label">注册用户</view></view>
+    <view class="stat-card s4"><view class="num">{{stats.totalBorrows}}</view><view class="label">累计借阅</view></view>
+  </view>
+
+  <!-- Category quick access -->
+  <view class="card">
+    <view style="font-size:32rpx;font-weight:bold;margin-bottom:15rpx;">📂 图书分类</view>
+    <view style="display:flex;flex-wrap:wrap;gap:15rpx;">
+      <view class="tag-card" wx:for="{{categories}}" wx:key="*this" bindtap="goCategory" data-cat="{{item}}">{{item}}</view>
     </view>
   </view>
 
-  <!-- 快捷入口 -->
+  <!-- Top books -->
   <view class="card">
-    <view style="font-size:32rpx;font-weight:bold;margin-bottom:20rpx;">快捷功能</view>
-    <view style="display:flex;gap:20rpx;">
-      <view style="flex:1;text-align:center;" bindtap="goBooks">
-        <view style="width:80rpx;height:80rpx;background:#e3f2fd;border-radius:50%;margin:0 auto 10rpx;line-height:80rpx;font-size:40rpx;">📚</view>
-        <text style="font-size:24rpx;color:#666;">图书管理</text>
-      </view>
-      <view style="flex:1;text-align:center;" bindtap="goBorrows">
-        <view style="width:80rpx;height:80rpx;background:#fff3e0;border-radius:50%;margin:0 auto 10rpx;line-height:80rpx;font-size:40rpx;">📋</view>
-        <text style="font-size:24rpx;color:#666;">借阅记录</text>
-      </view>
-      <view style="flex:1;text-align:center;" bindtap="goPoints">
-        <view style="width:80rpx;height:80rpx;background:#e8f5e9;border-radius:50%;margin:0 auto 10rpx;line-height:80rpx;font-size:40rpx;">⭐</view>
-        <text style="font-size:24rpx;color:#666;">积分签到</text>
-      </view>
-      <view style="flex:1;text-align:center;" bindtap="goMine">
-        <view style="width:80rpx;height:80rpx;background:#fce4ec;border-radius:50%;margin:0 auto 10rpx;line-height:80rpx;font-size:40rpx;">👤</view>
-        <text style="font-size:24rpx;color:#666;">个人中心</text>
-      </view>
-    </view>
-  </view>
-
-  <!-- 最新图书 -->
-  <view class="card">
-    <view style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20rpx;">
-      <text style="font-size:32rpx;font-weight:bold;">最新图书</text>
-      <text style="color:#4A90D9;font-size:26rpx;" bindtap="goBooks">查看更多 →</text>
-    </view>
-    <view wx:if="{{recentBooks.length > 0}}">
-      <view class="list-item" wx:for="{{recentBooks}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
-        <view class="info">
+    <view style="font-size:32rpx;font-weight:bold;margin-bottom:15rpx;">🏆 热门图书</view>
+    <view wx:if="{{topBooks.length > 0}}">
+      <view class="rank-item" wx:for="{{topBooks}}" wx:key="title" bindtap="goDetail" data-id="{{item.id || index}}">
+        <view class="rank-num" style="color:{{index === 0 ? '#e74c3c' : index === 1 ? '#e67e22' : index === 2 ? '#f39c12' : '#999'}}">{{index + 1}}</view>
+        <image wx:if="{{item.coverImage}}" src="{{item.coverImage}}" mode="aspectFill" class="cover-sm"/>
+        <view class="info" style="flex:1">
           <view class="title">{{item.title}}</view>
-          <view class="desc">{{item.author}} | 库存:{{item.quantity}}</view>
+          <view class="desc">{{item.author}} · {{item.category || '未分类'}}</view>
+          <view class="desc">⭐ {{item.avgRating || 0}} ({{item.ratingCount || 0}}评)</view>
         </view>
-        <view style="color:#e74c3c;font-size:28rpx;">¥{{item.price}}</view>
       </view>
     </view>
-    <view wx:else class="empty">暂无图书</view>
+  </view>
+
+  <!-- Recent books -->
+  <view class="card">
+    <view style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15rpx;">
+      <text style="font-size:32rpx;font-weight:bold;">📚 最新上架</text>
+      <text style="color:#4A90D9;font-size:26rpx;" bindtap="goBooks">更多 →</text>
+    </view>
+    <scroll-view scroll-x style="white-space:nowrap;">
+      <view wx:for="{{recentBooks}}" wx:key="id" style="display:inline-block;width:200rpx;margin-right:20rpx;" bindtap="goDetail" data-id="{{item.id}}">
+        <image wx:if="{{item.coverImage}}" src="{{item.coverImage}}" mode="aspectFill" style="width:200rpx;height:260rpx;border-radius:12rpx;background:#eee;"/>
+        <view style="width:200rpx;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:26rpx;margin-top:8rpx;font-weight:bold;">{{item.title}}</view>
+        <view style="font-size:22rpx;color:#999;">{{item.author}}</view>
+      </view>
+    </scroll-view>
   </view>
 </view>

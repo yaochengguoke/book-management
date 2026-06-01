@@ -1,32 +1,39 @@
 <view class="container">
-  <!-- 搜索栏 -->
+  <!-- Search -->
   <view class="search-bar">
-    <input placeholder="搜索书名、作者..." bindinput="onSearch" value="{{keyword}}" />
-    <button style="margin-left:15rpx;width:120rpx;" class="btn-primary" bindtap="doSearch">搜索</button>
+    <input placeholder="搜索书名..." bindinput="onSearch" value="{{keyword}}" confirm-type="search" bindconfirm="doSearch"/>
+    <button class="btn-primary btn-sm" bindtap="doSearch" style="margin-left:10rpx;">搜索</button>
   </view>
 
-  <!-- 添加按钮（管理员可见） -->
+  <!-- Category filter -->
+  <scroll-view scroll-x style="white-space:nowrap;padding:15rpx 20rpx;background:#fff;margin-bottom:10rpx;">
+    <view class="tag-card" style="display:inline-block;" wx:for="{{categories}}" wx:key="*this"
+      bindtap="filterCategory" data-cat="{{item}}">{{item}}</view>
+    <view class="tag-card" style="display:inline-block;background:{{!activeCat?'#4A90D9':'#f0f0f0'}};color:{{!activeCat?'#fff':'#666'}};" bindtap="filterCategory" data-cat="">全部</view>
+  </scroll-view>
+
+  <!-- +Add -->
   <view wx:if="{{isAdmin}}" style="text-align:right;padding:0 20rpx 10rpx;">
-    <button class="btn-primary btn-sm" bindtap="showAdd">+ 添加图书</button>
+    <button class="btn-primary btn-sm" bindtap="goAdd">+ 添加</button>
   </view>
 
-  <!-- 图书列表 -->
-  <view wx:if="{{books.length > 0}}">
-    <view class="list-item" wx:for="{{books}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
-      <view class="info">
-        <view class="title">{{item.title}}</view>
-        <view class="desc">{{item.author}} | {{item.publisher || '未知出版社'}} | 库存:{{item.quantity}}</view>
-      </view>
-      <view style="text-align:right;">
-        <view style="color:#e74c3c;font-size:30rpx;font-weight:bold;">¥{{item.price}}</view>
-        <view wx:if="{{isAdmin}}">
-          <button class="btn-danger btn-sm" catchtap="deleteBook" data-id="{{item.id}}">删除</button>
+  <!-- Book grid -->
+  <view style="display:flex;flex-wrap:wrap;padding:0 20rpx;">
+    <view wx:for="{{books}}" wx:key="id" style="width:calc(50% - 10rpx);margin-right:{{index%2===0?'20rpx':'0'}};margin-bottom:20rpx;background:#fff;border-radius:16rpx;overflow:hidden;box-shadow:0 2rpx 8rpx rgba(0,0,0,0.06);" bindtap="goDetail" data-id="{{item.id}}">
+      <image wx:if="{{item.coverImage}}" src="{{item.coverImage}}" mode="aspectFill" style="width:100%;height:300rpx;background:#f0f0f0;"/>
+      <view wx:else style="width:100%;height:300rpx;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;color:#fff;font-size:36rpx;">📖</view>
+      <view style="padding:15rpx;">
+        <view style="font-size:28rpx;font-weight:bold;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{item.title}}</view>
+        <view style="font-size:22rpx;color:#999;">{{item.author}}</view>
+        <view style="display:flex;justify-content:space-between;align-items:center;margin-top:8rpx;">
+          <text style="color:#e74c3c;font-weight:bold;">¥{{item.price}}</text>
+          <text style="font-size:22rpx;color:#999;">⭐{{item.avgRating || '-'}}</text>
         </view>
+        <view wx:if="{{item.quantity === 0}}" style="position:absolute;top:100rpx;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.6);color:#fff;padding:8rpx 20rpx;border-radius:20rpx;font-size:24rpx;">已借完</view>
       </view>
     </view>
   </view>
-  <view wx:else class="empty">未找到图书</view>
 
-  <!-- 底部加载提示 -->
   <view wx:if="{{loading}}" style="text-align:center;padding:20rpx;color:#999;">加载中...</view>
+  <view wx:if="{{!loading && books.length === 0}}" class="empty">暂无图书</view>
 </view>

@@ -1,35 +1,81 @@
 <view class="container">
+  <!-- Add mode -->
   <view wx:if="{{mode === 'add'}}">
     <view class="card">
-      <view style="font-size:34rpx;font-weight:bold;margin-bottom:30rpx;">添加新图书</view>
-      <view class="form-group"><label>书名 *</label><input bindinput="onField" data-field="title" placeholder="请输入书名" /></view>
-      <view class="form-group"><label>作者 *</label><input bindinput="onField" data-field="author" placeholder="请输入作者" /></view>
-      <view class="form-group"><label>ISBN</label><input bindinput="onField" data-field="isbn" placeholder="请输入ISBN" /></view>
-      <view class="form-group"><label>出版社</label><input bindinput="onField" data-field="publisher" placeholder="请输入出版社" /></view>
-      <view class="form-group"><label>价格 *</label><input type="digit" bindinput="onField" data-field="price" placeholder="请输入价格" /></view>
-      <view class="form-group"><label>数量 *</label><input type="number" bindinput="onField" data-field="quantity" placeholder="请输入数量" /></view>
-      <view class="form-group"><label>描述</label><input bindinput="onField" data-field="description" placeholder="请输入描述" /></view>
-      <button class="btn-primary" style="width:100%;margin-top:20rpx;" bindtap="submitAdd">确认添加</button>
+      <view style="font-size:34rpx;font-weight:bold;margin-bottom:20rpx;">添加新图书</view>
+      <view style="text-align:center;padding:20rpx;background:#f0f0f0;border-radius:12rpx;margin-bottom:20rpx;" bindtap="scanISBN">
+        <text style="font-size:40rpx;">📷</text>
+        <view style="font-size:24rpx;color:#666;">扫描ISBN条码自动填充</view>
+      </view>
+      <input class="field" placeholder="书名 *" bindinput="onField" data-field="title"/>
+      <input class="field" placeholder="作者 *" bindinput="onField" data-field="author"/>
+      <input class="field" placeholder="ISBN（扫码自动填入）" bindinput="onField" data-field="isbn"/>
+      <input class="field" placeholder="出版社" bindinput="onField" data-field="publisher"/>
+      <input class="field" placeholder="分类" bindinput="onField" data-field="category"/>
+      <input class="field" placeholder="封面图片URL" bindinput="onField" data-field="coverImage"/>
+      <input class="field" placeholder="价格 *" type="digit" bindinput="onField" data-field="price"/>
+      <input class="field" placeholder="数量 *" type="number" bindinput="onField" data-field="quantity"/>
+      <input class="field" placeholder="描述" bindinput="onField" data-field="description"/>
+      <button class="btn-primary" style="width:100%;" bindtap="submitAdd">确认添加</button>
     </view>
   </view>
 
+  <!-- View mode -->
   <view wx:else>
+    <!-- Cover + Info -->
     <view class="card">
-      <view style="font-size:40rpx;font-weight:bold;color:#333;">{{book.title}}</view>
-      <view style="margin-top:20rpx;">
-        <view class="desc">作者：{{book.author}}</view>
-        <view class="desc">ISBN：{{book.isbn || '无'}}</view>
-        <view class="desc">出版社：{{book.publisher || '未知'}}</view>
-        <view class="desc">价格：<text style="color:#e74c3c;font-weight:bold;">¥{{book.price}}</text></view>
-        <view class="desc">库存：{{book.quantity}} 本</view>
-        <view class="desc">描述：{{book.description || '暂无描述'}}</view>
+      <view style="display:flex;gap:20rpx;">
+        <image wx:if="{{book.coverImage}}" src="{{book.coverImage}}" mode="aspectFill" style="width:200rpx;height:260rpx;border-radius:16rpx;background:#eee;"/>
+        <view wx:else style="width:200rpx;height:260rpx;border-radius:16rpx;background:linear-gradient(135deg,#667eea,#764ba2);display:flex;align-items:center;justify-content:center;font-size:60rpx;">📖</view>
+        <view style="flex:1;">
+          <view style="font-size:36rpx;font-weight:bold;">{{book.title}}</view>
+          <view style="font-size:26rpx;color:#666;margin-top:8rpx;">{{book.author}}</view>
+          <view style="font-size:24rpx;color:#999;">{{book.publisher || '未知'}} · {{book.category || '未分类'}}</view>
+          <view style="display:flex;align-items:center;gap:10rpx;margin-top:10rpx;">
+            <text style="font-size:36rpx;color:#e74c3c;font-weight:bold;">¥{{book.price}}</text>
+            <text style="font-size:24rpx;color:#999;">库存: {{book.quantity}}</text>
+          </view>
+        </view>
       </view>
     </view>
 
-    <!-- 借阅按钮 -->
-    <view style="padding:20rpx;display:flex;gap:20rpx;">
+    <!-- Actions -->
+    <view style="display:flex;gap:15rpx;padding:0 20rpx 20rpx;">
       <button class="btn-primary" style="flex:1;" bindtap="borrowBook" wx:if="{{book.quantity > 0}}">借阅此书</button>
-      <button style="flex:1;background:#ccc;color:#fff;border:none;border-radius:12rpx;padding:20rpx;" wx:if="{{book.quantity === 0}}" disabled>库存不足</button>
+      <button class="btn-primary" style="flex:1;background:#e67e22;" bindtap="reserveBook" wx:if="{{book.quantity === 0}}">预约排队</button>
+      <button style="flex:1;background:#f0f0f0;color:#666;border:none;border-radius:12rpx;padding:20rpx;font-size:28rpx;" wx:if="{{book.quantity > 0}}">库存充足</button>
+    </view>
+
+    <!-- Rating & Reviews -->
+    <view class="card">
+      <view style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20rpx;">
+        <text style="font-size:32rpx;font-weight:bold;">📝 读者评价</text>
+        <text style="color:#4A90D9;font-size:26rpx;" bindtap="showReviewForm">写评价</text>
+      </view>
+      <view wx:if="{{reviews.length > 0}}">
+        <view wx:for="{{reviews}}" wx:key="id" style="padding:15rpx 0;border-bottom:1rpx solid #f0f0f0;">
+          <view style="display:flex;justify-content:space-between;">
+            <text style="font-size:28rpx;font-weight:bold;">{{item.username}}</text>
+            <text style="font-size:24rpx;color:#f39c12;">{'⭐'.repeat(item.rating)}</text>
+          </view>
+          <view style="font-size:26rpx;color:#666;margin-top:8rpx;" wx:if="{{item.content}}">{{item.content}}</view>
+          <view style="font-size:22rpx;color:#ccc;margin-top:5rpx;">{{item.createdAt}}</view>
+        </view>
+      </view>
+      <view wx:else style="text-align:center;color:#ccc;padding:40rpx;">暂无评价，来写第一条吧</view>
+    </view>
+
+    <!-- Review form modal -->
+    <view wx:if="{{showReview}}" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:100;display:flex;align-items:center;justify-content:center;">
+      <view style="background:#fff;border-radius:16rpx;padding:30rpx;width:600rpx;">
+        <view style="font-size:32rpx;font-weight:bold;margin-bottom:20rpx;">写评价</view>
+        <view style="text-align:center;margin-bottom:20rpx;">
+          <text wx:for="{{[1,2,3,4,5]}}" wx:key="*this" style="font-size:48rpx;padding:0 10rpx;{{item <= reviewRating ? '':'opacity:0.3;'}}" bindtap="setRating" data-r="{{item}}">⭐</text>
+        </view>
+        <textarea placeholder="说说你的看法..." bindinput="onReviewContent" maxlength="500" style="width:100%;height:150rpx;border:1rpx solid #e0e0e0;border-radius:12rpx;padding:15rpx;font-size:28rpx;"/>
+        <button class="btn-primary" style="width:100%;margin-top:20rpx;" bindtap="submitReview">提交评价</button>
+        <button style="width:100%;margin-top:10rpx;background:#f0f0f0;color:#666;border:none;border-radius:12rpx;padding:20rpx;font-size:28rpx;" bindtap="hideReviewForm">取消</button>
+      </view>
     </view>
   </view>
 </view>

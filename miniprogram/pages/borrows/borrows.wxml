@@ -1,18 +1,26 @@
 <view class="container">
-  <view class="card" wx:if="{{borrows.length > 0}}">
-    <view class="list-item" wx:for="{{borrows}}" wx:key="id">
-      <view class="info">
-        <view class="title">{{item.bookTitle || '图书#' + item.bookId}}</view>
-        <view class="desc">借阅日期：{{item.borrowDate}}</view>
-        <view class="desc">应还日期：{{item.dueDate}}</view>
-        <view class="desc">状态：
-          <text class="tag {{item.status === 'BORROWED' ? 'tag-warning' : 'tag-success'}}">
+  <view wx:if="{{borrows.length > 0}}">
+    <view class="card" wx:for="{{borrows}}" wx:key="id" style="{{item.overdue ? 'border-left:8rpx solid #e74c3c;' : ''}}">
+      <view style="display:flex;justify-content:space-between;align-items:center;">
+        <view style="flex:1;">
+          <view style="font-size:30rpx;font-weight:bold;">{{item.bookTitle || '图书#' + item.bookId}}</view>
+          <view style="font-size:24rpx;color:#999;">{{item.bookAuthor || ''}}</view>
+          <view style="font-size:24rpx;color:#999;margin-top:5rpx;">借阅: {{item.borrowDate}}</view>
+          <view style="font-size:24rpx;color:{{item.overdue ? '#e74c3c' : '#999'}};">应还: {{item.dueDate}} {{item.overdue ? '⚠️已超期' : ''}}</view>
+        </view>
+        <view>
+          <view class="tag {{item.status === 'BORROWED' ? 'tag-warning' : 'tag-success'}}" style="margin-bottom:10rpx;">
             {{item.status === 'BORROWED' ? '借阅中' : '已归还'}}
-          </text>
+          </view>
+          <button wx:if="{{item.status === 'BORROWED'}}" class="btn-primary btn-sm" catchtap="returnBook" data-id="{{item.id}}">归还</button>
         </view>
       </view>
-      <button wx:if="{{item.status === 'BORROWED'}}" class="btn-primary btn-sm" catchtap="returnBook" data-id="{{item.id}}">归还</button>
     </view>
   </view>
   <view wx:else class="empty">暂无借阅记录</view>
+
+  <!-- Export -->
+  <view wx:if="{{borrows.length > 0}}" style="text-align:center;padding:20rpx;">
+    <button class="btn-primary" bindtap="exportData" style="width:80%;">📥 导出借阅报表(CSV)</button>
+  </view>
 </view>

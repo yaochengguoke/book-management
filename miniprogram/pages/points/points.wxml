@@ -1,16 +1,27 @@
 <view class="container">
-  <!-- 积分展示 -->
   <view class="card" style="text-align:center;background:linear-gradient(135deg,#f093fb,#f5576c);color:#fff;">
     <view style="font-size:72rpx;font-weight:bold;">{{points.balance || 0}}</view>
     <view style="font-size:28rpx;opacity:0.8;">当前积分</view>
-    <view style="margin-top:20rpx;display:flex;justify-content:center;gap:40rpx;">
+    <view style="margin-top:15rpx;display:flex;justify-content:center;gap:40rpx;">
       <view><text style="font-size:32rpx;">{{points.totalEarned || 0}}</text><text style="font-size:22rpx;opacity:0.7;"> 累计获得</text></view>
       <view><text style="font-size:32rpx;">{{points.totalSpent || 0}}</text><text style="font-size:22rpx;opacity:0.7;"> 累计使用</text></view>
     </view>
   </view>
-
-  <!-- 签到 -->
   <view class="card" style="text-align:center;">
     <button class="btn-primary" style="width:100%;" bindtap="doSignIn">📅 每日签到 +10积分</button>
+  </view>
+  <!-- My reservations -->
+  <view class="card">
+    <view style="font-size:32rpx;font-weight:bold;margin-bottom:15rpx;">📋 我的预约</view>
+    <view wx:if="{{reservations.length > 0}}">
+      <view wx:for="{{reservations}}" wx:key="id" style="display:flex;justify-content:space-between;align-items:center;padding:15rpx 0;border-bottom:1rpx solid #f0f0f0;">
+        <view>
+          <view style="font-size:28rpx;">{{item.bookTitle}}</view>
+          <view style="font-size:24rpx;color:#999;">排队第{{item.queuePosition}}位 · {{item.status}}</view>
+        </view>
+        <button class="btn-danger btn-sm" catchtap="cancelReservation" data-id="{{item.id}}">取消</button>
+      </view>
+    </view>
+    <view wx:else style="text-align:center;color:#ccc;padding:20rpx;">暂无预约</view>
   </view>
 </view>

@@ -9,11 +9,25 @@
     "pages/users/users"
   ],
   "window": {
-    "backgroundTextStyle": "light",
+    "backgroundTextStyle": "dark",
     "navigationBarBackgroundColor": "#4A90D9",
     "navigationBarTitleText": "智慧图书管理",
     "navigationBarTextStyle": "white"
   },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#4A90D9",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      { "pagePath": "pages/index/index", "text": "首页" },
+      { "pagePath": "pages/books/books", "text": "图书" },
+      { "pagePath": "pages/borrows/borrows", "text": "借阅" },
+      { "pagePath": "pages/points/points", "text": "积分" },
+      { "pagePath": "pages/mine/mine", "text": "我的" }
+    ]
+  },
   "style": "v2",
-  "sitemapLocation": "sitemap.json"
+  "sitemapLocation": "sitemap.json",
+  "darkmode": true
 }
