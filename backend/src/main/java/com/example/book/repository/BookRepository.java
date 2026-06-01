@@ -20,4 +20,9 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     List<Book> findByIsbn(String isbn);
 
     boolean existsByIsbn(String isbn);
+
+    Page<Book> findByCategory(String category, Pageable pageable);
+
+    @org.springframework.data.jpa.repository.Query("SELECT DISTINCT b.category FROM Book b WHERE b.category IS NOT NULL AND b.category <> ''")
+    List<String> findDistinctCategories();
 }

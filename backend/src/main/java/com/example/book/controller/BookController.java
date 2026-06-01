@@ -3,31 +3,29 @@ package com.example.book.controller;
 import com.example.book.dto.ApiResponse;
 import com.example.book.dto.BookRequest;
 import com.example.book.dto.BookResponse;
+import com.example.book.entity.Book;
+import com.example.book.repository.BookRepository;
 import com.example.book.service.BookService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/books")
 public class BookController {
 
     private final BookService bookService;
+    private final BookRepository bookRepository;
 
-    public BookController(BookService bookService) {
+    public BookController(BookService bookService, BookRepository bookRepository) {
         this.bookService = bookService;
+        this.bookRepository = bookRepository;
     }
 
     @GetMapping
@@ -49,11 +47,16 @@ public class BookController {
     public ApiResponse<Page<BookResponse>> searchBooks(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String author,
+            @RequestParam(required = false) String category,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        
         Pageable pageable = PageRequest.of(page, size);
-        return ApiResponse.ok(bookService.searchBooks(title, author, pageable));
+        return ApiResponse.ok(bookService.searchBooks(title, author, category, pageable));
+    }
+
+    @GetMapping("/categories")
+    public ApiResponse<List<String>> getCategories() {
+        return ApiResponse.ok(bookRepository.findDistinctCategories());
     }
 
     @GetMapping("/{id}")

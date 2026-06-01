@@ -34,8 +34,10 @@ public class BookService {
     }
 
     @Transactional(readOnly = true)
-    public Page<BookResponse> searchBooks(String title, String author, Pageable pageable) {
-        if (title != null && author != null) {
+    public Page<BookResponse> searchBooks(String title, String author, String category, Pageable pageable) {
+        if (category != null && !category.isEmpty()) {
+            return bookRepository.findByCategory(category, pageable).map(BookResponse::new);
+        } else if (title != null && author != null) {
             return bookRepository.findByTitleContainingAndAuthorContaining(title, author, pageable)
                     .map(BookResponse::new);
         } else if (title != null) {
@@ -57,6 +59,8 @@ public class BookService {
         book.setDescription(request.getDescription());
         book.setQuantity(request.getQuantity());
         book.setPrice(request.getPrice());
+        book.setCategory(request.getCategory());
+        book.setCoverImage(request.getCoverImage());
         book.setCreatedAt(LocalDateTime.now());
         book.setUpdatedAt(LocalDateTime.now());
 
@@ -76,6 +80,8 @@ public class BookService {
         book.setDescription(request.getDescription());
         book.setQuantity(request.getQuantity());
         book.setPrice(request.getPrice());
+        book.setCategory(request.getCategory());
+        book.setCoverImage(request.getCoverImage());
         book.setUpdatedAt(LocalDateTime.now());
 
         Book updatedBook = bookRepository.save(book);
