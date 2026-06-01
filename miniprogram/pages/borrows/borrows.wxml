@@ -1,0 +1,18 @@
+<view class="container">
+  <view class="card" wx:if="{{borrows.length > 0}}">
+    <view class="list-item" wx:for="{{borrows}}" wx:key="id">
+      <view class="info">
+        <view class="title">{{item.bookTitle || '图书#' + item.bookId}}</view>
+        <view class="desc">借阅日期：{{item.borrowDate}}</view>
+        <view class="desc">应还日期：{{item.dueDate}}</view>
+        <view class="desc">状态：
+          <text class="tag {{item.status === 'BORROWED' ? 'tag-warning' : 'tag-success'}}">
+            {{item.status === 'BORROWED' ? '借阅中' : '已归还'}}
+          </text>
+        </view>
+      </view>
+      <button wx:if="{{item.status === 'BORROWED'}}" class="btn-primary btn-sm" catchtap="returnBook" data-id="{{item.id}}">归还</button>
+    </view>
+  </view>
+  <view wx:else class="empty">暂无借阅记录</view>
+</view>

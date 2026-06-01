@@ -35,4 +35,10 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining("; "));
         return ApiResponse.fail(message);
     }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiResponse<Void> handleRuntimeException(RuntimeException ex) {
+        return ApiResponse.fail(400, ex.getMessage());
+    }
 }

@@ -1,0 +1,35 @@
+<view class="container">
+  <view wx:if="{{mode === 'add'}}">
+    <view class="card">
+      <view style="font-size:34rpx;font-weight:bold;margin-bottom:30rpx;">添加新图书</view>
+      <view class="form-group"><label>书名 *</label><input bindinput="onField" data-field="title" placeholder="请输入书名" /></view>
+      <view class="form-group"><label>作者 *</label><input bindinput="onField" data-field="author" placeholder="请输入作者" /></view>
+      <view class="form-group"><label>ISBN</label><input bindinput="onField" data-field="isbn" placeholder="请输入ISBN" /></view>
+      <view class="form-group"><label>出版社</label><input bindinput="onField" data-field="publisher" placeholder="请输入出版社" /></view>
+      <view class="form-group"><label>价格 *</label><input type="digit" bindinput="onField" data-field="price" placeholder="请输入价格" /></view>
+      <view class="form-group"><label>数量 *</label><input type="number" bindinput="onField" data-field="quantity" placeholder="请输入数量" /></view>
+      <view class="form-group"><label>描述</label><input bindinput="onField" data-field="description" placeholder="请输入描述" /></view>
+      <button class="btn-primary" style="width:100%;margin-top:20rpx;" bindtap="submitAdd">确认添加</button>
+    </view>
+  </view>
+
+  <view wx:else>
+    <view class="card">
+      <view style="font-size:40rpx;font-weight:bold;color:#333;">{{book.title}}</view>
+      <view style="margin-top:20rpx;">
+        <view class="desc">作者：{{book.author}}</view>
+        <view class="desc">ISBN：{{book.isbn || '无'}}</view>
+        <view class="desc">出版社：{{book.publisher || '未知'}}</view>
+        <view class="desc">价格：<text style="color:#e74c3c;font-weight:bold;">¥{{book.price}}</text></view>
+        <view class="desc">库存：{{book.quantity}} 本</view>
+        <view class="desc">描述：{{book.description || '暂无描述'}}</view>
+      </view>
+    </view>
+
+    <!-- 借阅按钮 -->
+    <view style="padding:20rpx;display:flex;gap:20rpx;">
+      <button class="btn-primary" style="flex:1;" bindtap="borrowBook" wx:if="{{book.quantity > 0}}">借阅此书</button>
+      <button style="flex:1;background:#ccc;color:#fff;border:none;border-radius:12rpx;padding:20rpx;" wx:if="{{book.quantity === 0}}" disabled>库存不足</button>
+    </view>
+  </view>
+</view>

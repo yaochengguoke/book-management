@@ -1,0 +1,19 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/books/books",
+    "pages/book-detail/book-detail",
+    "pages/borrows/borrows",
+    "pages/points/points",
+    "pages/mine/mine",
+    "pages/users/users"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#4A90D9",
+    "navigationBarTitleText": "智慧图书管理",
+    "navigationBarTextStyle": "white"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

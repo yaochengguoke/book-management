@@ -3,19 +3,26 @@ server:
 
 spring:
   datasource:
-    url: jdbc:sqlite:./data/example_db.sqlite
-    username: admin
-    password: password
-    driver-class-name: org.sqlite.JDBC
+    url: jdbc:h2:mem:bookdb
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
-    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    database-platform: org.hibernate.dialect.H2Dialect
 
 jwt:
   secret: ${JWT_SECRET:book-management-secret-key-change-in-production}
   expiration-ms: 86400000
+
+wechat:
+  app-id: ${WECHAT_APPID:wx277b30e3685c590f}
+  app-secret: ${WECHAT_APPSECRET:737ceefc0ec6c99df26efda82c906031}

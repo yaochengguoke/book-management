@@ -1,0 +1,26 @@
+<view class="container">
+  <view class="card" wx:if="{{users.length > 0}}">
+    <view class="list-item" wx:for="{{users}}" wx:key="id">
+      <view class="info">
+        <view class="title">{{item.username}}</view>
+        <view class="desc">
+          <text class="tag {{item.role === 'ADMIN' ? 'tag-danger' : 'tag-info'}}">{{item.role}}</text>
+        </view>
+      </view>
+      <button wx:if="{{item.role !== 'ADMIN'}}" class="btn-danger btn-sm" catchtap="deleteUser" data-id="{{item.id}}">删除</button>
+    </view>
+  </view>
+
+  <!-- Add user form -->
+  <view class="card">
+    <view style="font-size:32rpx;font-weight:bold;margin-bottom:20rpx;">添加用户</view>
+    <view class="form-group"><label>用户名</label><input bindinput="onField" data-field="username" placeholder="输入用户名" /></view>
+    <view class="form-group"><label>密码</label><input type="password" bindinput="onField" data-field="password" placeholder="输入密码" /></view>
+    <view class="form-group"><label>角色</label>
+      <picker mode="selector" range="{{roles}}" bindchange="onRoleChange">
+        <view style="height:80rpx;line-height:80rpx;border:1rpx solid #e0e0e0;border-radius:12rpx;padding:0 20rpx;">{{roles[roleIndex]}}</view>
+      </picker>
+    </view>
+    <button class="btn-primary" style="width:100%;" bindtap="addUser">确认添加</button>
+  </view>
+</view>

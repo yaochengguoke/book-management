@@ -1,0 +1,32 @@
+<view class="container">
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <input placeholder="搜索书名、作者..." bindinput="onSearch" value="{{keyword}}" />
+    <button style="margin-left:15rpx;width:120rpx;" class="btn-primary" bindtap="doSearch">搜索</button>
+  </view>
+
+  <!-- 添加按钮（管理员可见） -->
+  <view wx:if="{{isAdmin}}" style="text-align:right;padding:0 20rpx 10rpx;">
+    <button class="btn-primary btn-sm" bindtap="showAdd">+ 添加图书</button>
+  </view>
+
+  <!-- 图书列表 -->
+  <view wx:if="{{books.length > 0}}">
+    <view class="list-item" wx:for="{{books}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
+      <view class="info">
+        <view class="title">{{item.title}}</view>
+        <view class="desc">{{item.author}} | {{item.publisher || '未知出版社'}} | 库存:{{item.quantity}}</view>
+      </view>
+      <view style="text-align:right;">
+        <view style="color:#e74c3c;font-size:30rpx;font-weight:bold;">¥{{item.price}}</view>
+        <view wx:if="{{isAdmin}}">
+          <button class="btn-danger btn-sm" catchtap="deleteBook" data-id="{{item.id}}">删除</button>
+        </view>
+      </view>
+    </view>
+  </view>
+  <view wx:else class="empty">未找到图书</view>
+
+  <!-- 底部加载提示 -->
+  <view wx:if="{{loading}}" style="text-align:center;padding:20rpx;color:#999;">加载中...</view>
+</view>
