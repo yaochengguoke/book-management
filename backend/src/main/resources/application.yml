@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:h2:mem:bookdb
+    url: jdbc:h2:file:/app/data/bookdb;AUTO_SERVER=TRUE
     username: sa
     password:
     driver-class-name: org.h2.Driver
